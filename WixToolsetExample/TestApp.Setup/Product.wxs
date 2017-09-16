@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="TestApp" Language="1033" Version="1.0.0.0" Manufacturer="Murat Aykanat" UpgradeCode="88a5b554-28ff-4167-a8eb-9c363f9672de">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+    <WixVariable Id="WixUILicenseRtf"
+                 Value="..\..\..\TestApp\bin\Debug\Documentation\License.rtf"/>
+    <UIRef Id="WixUI_InstallDir"/>
+
+    <Icon Id="AppIcon"
+          SourceFile="..\..\..\TestApp\bin\Debug\Icon\TestApp.ico"/>
+    <Property Id="ARPPRODUCTICON"
+              Value="AppIcon"/>
+    <Property Id="ARPCOMMENTS"
+              Value="(c) 2017 Murat Aykanat"/>
+    <Property Id="ARPCONTACT"
+              Value="Murat Aykanat"/>
+    <Property Id="ARPURLINFOABOUT"
+              Value="https://github.com/aykanatm/wixtoolset-example"/>
+    
+    <Property Id="ApplicationFolderName"
+              Value="TestApp"/>
+    <Property Id="WixAppFolder"
+              Value="WixPerMachineFolder"/>
+    <Property Id="WIXUI_INSTALLDIR"
+              Value="INSTALLDIR"/>
+    
+    <!-- Directory Structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="TestApp">
+          <Directory Id="DocumentationFolderId" Name="Documentation"/>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="MyShortcutsDir" Name="TestApp"/>
+      </Directory>
+    </Directory>
+
+    <!-- Components-->
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="ApplicationComponents">
+        <File Id="ExecutableFile"
+              Name="TestApp.exe"
+              Source="..\..\..\TestApp\bin\Debug\TestApp.exe"
+              KeyPath="yes"/>
+        <File Id="ConfigFile"
+              Name="TestApp.exe.config"
+              Source="..\..\..\TestApp\bin\Debug\TestApp.exe.config"/>
+        <File Id="DebugDatabase"
+              Name="TestApp.pdb"
+              Source="..\..\..\TestApp\bin\Debug\TestApp.pdb"/>
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DocumentationFolderId">
+      <Component Id="DocumentationComponents">
+        <File Id="TextFile"
+              Name="TestAppDocumentation.txt"
+              Source="..\..\..\TestApp\bin\Debug\Documentation\TestAppDocumentation.txt"
+              KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="MyShortcutsDir">
+      <Component Id="StartMenuShortcuts">
+        <Shortcut Id="ApplicationExecutableShortcut"
+                  Name="TestApp Executable"
+                  Description="Start TestApp"
+                  Target="[INSTALLFOLDER]TestApp.exe"/>
+        <Shortcut Id="DocumentationStartMenuShortcut"
+                  Name="TestApp Documentation"
+                  Description="Read TestApp Documentation"
+                  Target="[DocumentationFolderId]TestAppDocumentation.txt"/>
+        <Shortcut Id="UninstallShortcut"
+                  Name="Uninstall TestApp"
+                  Target="[System64Folder]msiexec.exe"
+                  Arguments="/x [ProductCode]"/>
+        <RemoveFolder Id="RemoveMyShortcutsDir"
+                      On="uninstall"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\MuratAykanat\TestApp"
+                       Name="installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Features -->
+    <Feature Id="ProductFeature"
+             Title="Main Product"
+             Level="1">
+      <ComponentRef Id="ApplicationComponents"/>
+      <ComponentRef Id="DocumentationComponents"/>
+      <ComponentRef Id="StartMenuShortcuts"/>
+    </Feature>
+	</Product>
+</Wix>
